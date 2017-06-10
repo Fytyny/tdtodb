@@ -18,6 +18,7 @@ public class ConnectionManager {
 
     public Connection getConnection() throws ClassNotFoundException, SQLException {
         String dbName = connectionProps.getProperty("dbname");
+        if (connection != null) closeConnection();
         if (dbType == DbType.sqlite){
             Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection("jdbc:" + dbType.toString() + ":" + dbName );
@@ -45,6 +46,5 @@ public class ConnectionManager {
 
     public void closeConnection() throws SQLException {
         connection.close();
-        connectionProps = null;
     }
 }

@@ -59,19 +59,19 @@ public class SQLiteDriver implements DatabaseDriver {
     private boolean createTable() throws SQLException, ClassNotFoundException {
         query = () ->{
             String result = new String();
-            result += "create table if not exist " + table.getName() + "(";
+            result += "create table if not exists " + table.getName() + "(";
             for (Column i : table.getColumns()){
-                result += i.getName();
-                result += i.getType();
+                result += i.getName() + " ";
+                result += i.getType() + " ";
                 if (i.isPrimaryKey()) result+= "primary key ";
                 if (i.isGenerated()) result += "auto_increment ";
                 if (i != table.getColumns().getLast()) result += ",";
                 else result += ")";
             }
-
+            //System.out.println(result);
             return result;
         };
-        return query.execute();
+        return query.execute(connectionManager);
     }
     private boolean insertIntoTable(Map<String, String>[] values) throws SQLException, ClassNotFoundException {
         query = () ->{
@@ -111,12 +111,13 @@ public class SQLiteDriver implements DatabaseDriver {
                 }
 
             }
-        });
+        }, connectionManager);
     }
 
     @Override
-    public void createTableInDb() throws NoTableException {
+    public void createTableInDb() throws NoTableException, SQLException, ClassNotFoundException {
         if (table == null) throw new NoTableException();
+        else createTable();
     }
 
     @Override

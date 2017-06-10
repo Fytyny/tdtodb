@@ -27,13 +27,14 @@ public class Beans {
     }
 
     @Bean
+    @Scope(BeanDefinition.SCOPE_SINGLETON)
     public ConnectionManager connectionManager(){
         return new ConnectionManager(dbType());
     }
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public DatabaseDriver sqliteDriver(){
+    public DatabaseDriver databaseDriver(){
         if (dbType() == DbType.sqlite) return new SQLiteDriver();
         else return null;
     }

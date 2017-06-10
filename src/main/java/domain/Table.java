@@ -26,7 +26,9 @@ public class Table {
     }
 
     public Table(String name) {
+
         this.name = name;
+        this.columns = new LinkedList();
     }
 
     Table(String name, Column id){
