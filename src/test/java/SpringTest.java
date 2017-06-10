@@ -9,8 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import javax.annotation.Resource;
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -19,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Beans.class, loader = AnnotationConfigContextLoader.class)
 public class SpringTest {
-    @Resource
+    @Autowired
     Beans beans;
     @Autowired
     private DbType dbType;
