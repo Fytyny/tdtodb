@@ -16,6 +16,7 @@ import java.io.File;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -41,7 +42,7 @@ public class SQLiteDriverTest {
     public void beginTest() throws SQLException, ClassNotFoundException {
         assertNotEquals(null, connectionManager);
         assertNotEquals(null, connectionManager.getConnection());
-        //custom location - working, uncomment this to check
+        //custom location - working as long as you are not in c root or c/windows, uncomment this to check
         /*connectionManager.getConnectionProps().setProperty("dbname","C:/Log/test.db");
         assertNotEquals(null, connectionManager.getConnection()); */
     }
@@ -60,23 +61,44 @@ public class SQLiteDriverTest {
             e.printStackTrace();
         }
 
+        tableDbTest(table.getName());
+        String columnNamePattern = "Kolumna1";
+        int expectedType = Types.VARCHAR;
+        columnDbTest(table.getName(), columnNamePattern, expectedType);
+        columnNamePattern = "Kolumna2";
+        expectedType = Types.INTEGER;
+        columnDbTest(table.getName(), columnNamePattern, expectedType);
+
+    }
+
+    public void tableDbTest(String tableNamePattern) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = connectionManager.getConnection().getMetaData();
         String   catalog          = null;
         String   schemaPattern    = null;
-        String   tableNamePattern = null;
         String[] types            = null;
-
+        ResultSet result = databaseMetaData.getTables(catalog, schemaPattern, tableNamePattern, types );
         String tableName = null;
-
-        ResultSet result = databaseMetaData.getTables(
-                catalog, schemaPattern, tableNamePattern, types );
-
         while(result.next()) {
             tableName = result.getString(3);
         }
+        assertEquals(tableNamePattern, tableName);
+    }
 
-        assertEquals(table.getName(), tableName);
+    public void columnDbTest( String   tableNamePattern, String columnNamePattern, int expectedType) throws SQLException, ClassNotFoundException {
+        DatabaseMetaData databaseMetaData = connectionManager.getConnection().getMetaData();
+        String   catalog          = null;
+        String   schemaPattern    = null;
+        ResultSet result = databaseMetaData.getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
 
+        String columnName = null;
+        int columnType = 0;
+        while(result.next()){
+            columnName = result.getString(4);
+            columnType = result.getInt(5);
+        }
+
+        assertEquals(columnNamePattern, columnName);
+        assertEquals(expectedType, columnType);
     }
 
     @After
