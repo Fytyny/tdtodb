@@ -1,4 +1,4 @@
-package domain;
+package databaseUtils;
 
 /**
  * Created by Cziczarito on 08.06.2017.

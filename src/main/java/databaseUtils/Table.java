@@ -31,7 +31,7 @@ public class Table {
         this.columns = new LinkedList();
     }
 
-    Table(String name, Column id){
+    public Table(String name, Column id){
         this.name = name;
         this.columns = new LinkedList();
         this.columns.add(id);

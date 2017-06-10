@@ -1,8 +1,8 @@
 package api;
 
-import Exceptions.NoTableException;
-import domain.ConnectionManager;
-import domain.Table;
+import exceptions.NoTableException;
+import databaseUtils.ConnectionManager;
+import databaseUtils.Table;
 
 import java.sql.SQLException;
 

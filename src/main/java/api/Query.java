@@ -1,7 +1,7 @@
 package api;
 
-import domain.ConnectionManager;
-import domain.Table;
+import databaseUtils.ConnectionManager;
+import databaseUtils.Table;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,12 +1,12 @@
-package Implementations;
+package implementations;
 
-import Exceptions.NoTableException;
+import exceptions.NoTableException;
 import api.DatabaseDriver;
 import api.PreparedStatementsSetStrategy;
 import api.Query;
-import domain.Column;
-import domain.ConnectionManager;
-import domain.Table;
+import databaseUtils.Column;
+import databaseUtils.ConnectionManager;
+import databaseUtils.Table;
 
 import javax.annotation.Resource;
 import java.sql.Connection;
@@ -64,11 +64,11 @@ public class SQLiteDriver implements DatabaseDriver {
                 result += i.getName() + " ";
                 result += i.getType() + " ";
                 if (i.isPrimaryKey()) result+= "primary key ";
-                if (i.isGenerated()) result += "auto_increment ";
+                if (i.isGenerated()) result += "autoincrement ";
                 if (i != table.getColumns().getLast()) result += ",";
                 else result += ")";
             }
-            //System.out.println(result);
+            System.out.println(result);
             return result;
         };
         return query.execute(connectionManager);
