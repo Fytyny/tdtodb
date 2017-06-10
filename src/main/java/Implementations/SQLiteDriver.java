@@ -2,6 +2,7 @@ package Implementations;
 
 import Exceptions.NoTableException;
 import api.DatabaseDriver;
+import api.PreparedStatementsSetStrategy;
 import api.Query;
 import domain.Column;
 import domain.ConnectionManager;
@@ -9,6 +10,9 @@ import domain.Table;
 
 import javax.annotation.Resource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Created by Cziczarito on 08.06.2017.
@@ -52,7 +56,7 @@ public class SQLiteDriver implements DatabaseDriver {
         this.connection = connection;
     }
 
-    private boolean createTable(){
+    private boolean createTable() throws SQLException, ClassNotFoundException {
         query = () ->{
             String result = new String();
             result += "create table if not exist " + table.getName() + "(";
@@ -69,7 +73,7 @@ public class SQLiteDriver implements DatabaseDriver {
         };
         return query.execute();
     }
-    private boolean insertIntoTable(String[][] data){
+    private boolean insertIntoTable(Map<String, String>[] values) throws SQLException, ClassNotFoundException {
         query = () ->{
             String result = new String();
             String pom = new String("(");
@@ -91,7 +95,23 @@ public class SQLiteDriver implements DatabaseDriver {
             result+=pom;
             return result;
         };
-        return query.executeBatch(table);
+        return query.executeBatch(table, values, new PreparedStatementsSetStrategy(){
+            @Override
+            public void addToBatch(PreparedStatement preparedStatement, Map<String, String>[] values) throws SQLException {
+                for (int j = 0; j<values.length; j++){
+                    int columnIndex = 0;
+                    for (Column i : table.getColumns()){
+                        if (!i.isGenerated()){
+                            columnIndex++;
+                            if (i.getType().contains("int")) preparedStatement.setInt(columnIndex, Integer.valueOf(values[j].get(i.getName())));
+                            else if (i.getType().contains("char")) preparedStatement.setString(columnIndex, values[j].get(i.getName()));
+                        }
+                    }
+                    preparedStatement.addBatch();
+                }
+
+            }
+        });
     }
 
     @Override

@@ -25,8 +25,6 @@ public class Table {
         this.columns = columns;
     }
 
-    //id bedzie beanem
-
     public Table(String name) {
         this.name = name;
     }

@@ -17,10 +17,7 @@ public class ConnectionManager {
     }
 
     public Connection getConnection() throws ClassNotFoundException, SQLException {
-        String user = connectionProps.getProperty("user");
-        String password = connectionProps.getProperty("password");
-        Integer portNumber = Integer.valueOf(connectionProps.getProperty("portNumber"));
-        String dbName = connectionProps.getProperty("name");
+        String dbName = connectionProps.getProperty("dbname");
         if (dbType == DbType.sqlite){
             Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection("jdbc:" + dbType.toString() + ":" + dbName );
