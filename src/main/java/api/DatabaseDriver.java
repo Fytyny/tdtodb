@@ -9,6 +9,7 @@ import domain.Table;
  */
 public interface DatabaseDriver {
     public void setConnectionManager(ConnectionManager connectionManager);
+    public ConnectionManager getConnectionManager();
     public void setTable(Table table);
     public Table getTable();
     public void createTableInDb() throws NoTableException;

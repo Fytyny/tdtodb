@@ -20,6 +20,7 @@ public class Beans {
     }
 
     @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public DbType dbType(){
         if (dbType == null) dbType = DbType.getDefaultType();
         return dbType;

@@ -3,10 +3,11 @@
  */
 
 import javafx.application.Application;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
-
+    String[][] htmlTable;
     public static void main(String[] args) {
         launch(args);
     }
@@ -14,5 +15,9 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+    }
+
+    private TableView getTableView(){
+        return null;
     }
 }
