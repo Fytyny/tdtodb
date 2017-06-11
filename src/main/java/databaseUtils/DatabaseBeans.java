@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope;
  * Created by Cziczarito on 09.06.2017.
  */
 @Configuration
-public class Beans {
+public class DatabaseBeans {
 
     private DbType dbType;
     public void setDbType(DbType dbType) {

@@ -1,11 +1,11 @@
 package DatabaseDriversTests;
 
-import Exceptions.NoTableException;
+import exceptions.NoTableException;
 import api.DatabaseDriver;
-import domain.Beans;
-import domain.Column;
-import domain.ConnectionManager;
-import domain.Table;
+import databaseUtils.DatabaseBeans;
+import databaseUtils.Column;
+import databaseUtils.ConnectionManager;
+import databaseUtils.Table;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class SQLiteDriverTest {
     DatabaseDriver databaseDriver;
     @Before
     public void before() throws SQLException, ClassNotFoundException {
-        ApplicationContext context = new AnnotationConfigApplicationContext(Beans.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(DatabaseBeans.class);
         connectionManager = context.getBean("connectionManager", ConnectionManager.class);
         Properties connectionProps = new Properties();
         connectionProps.setProperty("dbname","Test.db");
@@ -51,7 +51,14 @@ public class SQLiteDriverTest {
     public void putTableToDbTest() throws NoTableException, SQLException, ClassNotFoundException {
         //without id
         Table table = new Table("Tabela1");
+        testTable(table);
+        //with id
+        Table table1 = new Table("Tabela2", new Column("id", "integer", true,true));
+        testTable(table1);
 
+
+    }
+    public void testTable(Table table) throws SQLException, ClassNotFoundException {
         table.getColumns().add(new Column("Kolumna1", "varchar(32)"));
         table.getColumns().add(new Column("Kolumna2", "int"));
         databaseDriver.setTable(table);
@@ -68,7 +75,6 @@ public class SQLiteDriverTest {
         columnNamePattern = "Kolumna2";
         expectedType = Types.INTEGER;
         columnDbTest(table.getName(), columnNamePattern, expectedType);
-
     }
 
     public void tableDbTest(String tableNamePattern) throws SQLException, ClassNotFoundException {
