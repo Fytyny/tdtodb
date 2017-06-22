@@ -1,8 +1,6 @@
 package exceptions;
 
-/**
- * Created by Cziczarito on 08.06.2017.
- */
+
 public class NoConnectionException extends Exception {
     public NoConnectionException() {
         super("No db connection has been found");

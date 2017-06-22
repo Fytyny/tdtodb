@@ -2,9 +2,6 @@ package databaseUtils;
 
 import java.util.LinkedList;
 
-/**
- * Created by Cziczarito on 08.06.2017.
- */
 public class Table {
     private String name;
     private LinkedList<Column> columns;
@@ -23,6 +20,10 @@ public class Table {
 
     public void setColumns(LinkedList<Column> columns) {
         this.columns = columns;
+    }
+
+    public Table(){
+
     }
 
     public Table(String name) {

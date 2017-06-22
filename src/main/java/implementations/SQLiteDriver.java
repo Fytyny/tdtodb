@@ -1,5 +1,6 @@
 package implementations;
 
+import databaseUtils.AspectLogger;
 import exceptions.NoTableException;
 import api.DatabaseDriver;
 import api.PreparedStatementsSetStrategy;
@@ -14,22 +15,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-/**
- * Created by Cziczarito on 08.06.2017.
- */
+
 public class SQLiteDriver implements DatabaseDriver {
     private Table table;
-    private Query query;
     private Connection connection;
     private ConnectionManager connectionManager;
+    private AspectLogger aspectLogger;
+    private Query query;
 
-    public Query getQuery() {
-        return query;
-    }
 
-    public void setQuery(Query query) {
-        this.query = query;
-    }
 
     public ConnectionManager getConnectionManager() {
         return connectionManager;
@@ -38,6 +32,14 @@ public class SQLiteDriver implements DatabaseDriver {
     @Resource
     public void setConnectionManager(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
+    }
+
+    public AspectLogger getAspectLogger() {
+        return aspectLogger;
+    }
+    @Resource
+    public void setAspectLogger(AspectLogger aspectLogger) {
+        this.aspectLogger = aspectLogger;
     }
 
     public void setTable(Table table) {
@@ -68,7 +70,7 @@ public class SQLiteDriver implements DatabaseDriver {
                 if (i != table.getColumns().getLast()) result += ",";
                 else result += ")";
             }
-            System.out.println(result);
+            aspectLogger.logQueryInfo(result);
             return result;
         };
         return query.execute(connectionManager);
@@ -93,6 +95,7 @@ public class SQLiteDriver implements DatabaseDriver {
                 }
             }
             result+=pom;
+            aspectLogger.logQueryInfo(result);
             return result;
         };
         return query.executeBatch(table, values, new PreparedStatementsSetStrategy(){

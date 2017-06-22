@@ -7,9 +7,6 @@ import org.jsoup.nodes.Document;
 
 import java.util.LinkedList;
 
-/**
- * Created by Cziczarito on 11.06.2017.
- */
 public class HtmlTable extends AbstractHtmlArray implements UrlParser {
     private String tableTagName;
     private String tableTagValue;

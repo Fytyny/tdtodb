@@ -14,16 +14,17 @@ import java.util.Map;
  */
 public interface Query {
     public String getQuery();
-    public default void execute(ConnectionManager connectionManager) throws SQLException, ClassNotFoundException {
+    public default boolean execute(ConnectionManager connectionManager) throws SQLException, ClassNotFoundException {
         String query = getQuery();
         Connection connection = connectionManager.getConnection();
         Statement statement = connection.createStatement();
         boolean result = statement.execute(query);
         statement.close();
         connection.close();
+        return result;
     }
     // mpzna podac prepared statemnt w getQuery
-    public default void executeBatch(Table table, Map<String,String>[] values, PreparedStatementsSetStrategy preparedStatementsSetStrategy, ConnectionManager connectionManager) throws SQLException, ClassNotFoundException {
+    public default boolean executeBatch(Table table, Map<String,String>[] values, PreparedStatementsSetStrategy preparedStatementsSetStrategy, ConnectionManager connectionManager) throws SQLException, ClassNotFoundException {
         String query = getQuery();
         Connection connection = connectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -31,5 +32,6 @@ public interface Query {
         preparedStatement.executeBatch();
         preparedStatement.close();
         connection.close();
+        return true;
     }
 }

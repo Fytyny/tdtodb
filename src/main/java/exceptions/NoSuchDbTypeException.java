@@ -1,8 +1,6 @@
 package exceptions;
 
-/**
- * Created by Cziczarito on 09.06.2017.
- */
+
 public class NoSuchDbTypeException extends Exception {
     public NoSuchDbTypeException() {
         super();

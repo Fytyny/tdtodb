@@ -3,14 +3,14 @@ package databaseUtils;
 import implementations.SQLiteDriver;
 import api.DatabaseDriver;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 
 /**
  * Created by Cziczarito on 09.06.2017.
  */
 @Configuration
+@ComponentScan("databaseUtils")
+@EnableAspectJAutoProxy
 public class DatabaseBeans {
 
     private DbType dbType;
