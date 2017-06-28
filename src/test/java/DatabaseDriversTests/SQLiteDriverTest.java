@@ -1,11 +1,12 @@
 package DatabaseDriversTests;
 
-import exceptions.NoTableException;
 import api.DatabaseDriver;
-import databaseUtils.DatabaseBeans;
+import api.Query;
 import databaseUtils.Column;
 import databaseUtils.ConnectionManager;
+import databaseUtils.DatabaseBeans;
 import databaseUtils.Table;
+import exceptions.NoTableException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -53,12 +54,10 @@ public class SQLiteDriverTest {
         Table table = new Table("Tabela1");
         testTable(table);
         //with id
-        Table table1 = new Table("Tabela2", new Column("id", "integer", true,true));
-        testTable(table1);
-
-
+        Table tableWithId = new Table("Tabela2", new Column("id", "integer", true,true));
+        testTable(tableWithId);
     }
-    public void testTable(Table table) throws SQLException, ClassNotFoundException {
+    private void testTable(Table table) throws SQLException, ClassNotFoundException {
         table.getColumns().add(new Column("Kolumna1", "varchar(32)"));
         table.getColumns().add(new Column("Kolumna2", "int"));
         databaseDriver.setTable(table);
@@ -68,16 +67,16 @@ public class SQLiteDriverTest {
             e.printStackTrace();
         }
 
-        tableDbTest(table.getName());
+        isTableInDB(table.getName());
         String columnNamePattern = "Kolumna1";
         int expectedType = Types.VARCHAR;
-        columnDbTest(table.getName(), columnNamePattern, expectedType);
+        isColumnInTable(table.getName(), columnNamePattern, expectedType);
         columnNamePattern = "Kolumna2";
         expectedType = Types.INTEGER;
-        columnDbTest(table.getName(), columnNamePattern, expectedType);
+        isColumnInTable(table.getName(), columnNamePattern, expectedType);
     }
 
-    public void tableDbTest(String tableNamePattern) throws SQLException, ClassNotFoundException {
+    private boolean isTableInDB(String tableNamePattern) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = connectionManager.getConnection().getMetaData();
         String   catalog          = null;
         String   schemaPattern    = null;
@@ -87,10 +86,10 @@ public class SQLiteDriverTest {
         while(result.next()) {
             tableName = result.getString(3);
         }
-        assertEquals(tableNamePattern, tableName);
+        return tableNamePattern == tableName;
     }
 
-    public void columnDbTest( String   tableNamePattern, String columnNamePattern, int expectedType) throws SQLException, ClassNotFoundException {
+    public void isColumnInTable( String   tableNamePattern, String columnNamePattern, int expectedType) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = connectionManager.getConnection().getMetaData();
         String   catalog          = null;
         String   schemaPattern    = null;
@@ -107,6 +106,49 @@ public class SQLiteDriverTest {
         assertEquals(expectedType, columnType);
     }
 
+    @Test
+    public void insertValuesIntoTableTest() throws NoTableException, SQLException, ClassNotFoundException {
+        Table table = new Table("Tabela1");
+        table.getColumns().add(new Column("Kolumna1", "varchar(32)"));
+        table.getColumns().add(new Column("Kolumna2", "int"));
+        databaseDriver.setTable(table);
+        try{
+            databaseDriver.createTableInDb();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        Collection<Map<String,String>> values = new LinkedList<>();
+        String test = "t";
+        for (Integer i =0; i<20; i++){
+            HashMap<String, String> nap = new HashMap<>();
+            nap.put("Kolumna1",test);
+            nap.put("Kolumna2",i.toString());
+            values.add(nap);
+            test += "t";
+        }
+        try{
+            databaseDriver.insertIntoTableInDb(values);
+            String query = "select * from " + table.getName() + " order by Kolumna2 asc";
+            Query query1 = () ->{
+                return query;
+            };
+            ResultSet resultSet = query1.getAll(connectionManager);
+            int j = 0;
+            String test2 = "t";
+            while (resultSet.next()){
+                int i = resultSet.getInt("Kolumna2");
+                String string = resultSet.getString("Kolumna1");
+                assertEquals(j,i);
+                assertEquals(test2, string);
+                test2 += "t";
+                j++;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
     @After
     public void afterTests() throws SQLException {
         connectionManager.closeConnection();

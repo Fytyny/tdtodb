@@ -1,18 +1,19 @@
 package implementations;
 
-import databaseUtils.AspectLogger;
-import exceptions.NoTableException;
 import api.DatabaseDriver;
 import api.PreparedStatementsSetStrategy;
 import api.Query;
+import databaseUtils.AspectLogger;
 import databaseUtils.Column;
 import databaseUtils.ConnectionManager;
 import databaseUtils.Table;
+import exceptions.NoTableException;
 
 import javax.annotation.Resource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -22,8 +23,6 @@ public class SQLiteDriver implements DatabaseDriver {
     private ConnectionManager connectionManager;
     private AspectLogger aspectLogger;
     private Query query;
-
-
 
     public ConnectionManager getConnectionManager() {
         return connectionManager;
@@ -75,11 +74,11 @@ public class SQLiteDriver implements DatabaseDriver {
         };
         return query.execute(connectionManager);
     }
-    private boolean insertIntoTable(Map<String, String>[] values) throws SQLException, ClassNotFoundException {
+    private boolean insertIntoTable(Collection<Map<String,String>> values) throws SQLException, ClassNotFoundException {
         query = () ->{
             String result = new String();
             String pom = new String("(");
-            result += "insert into table " + table.getName() + "(";
+            result += "insert into " + table.getName() + "(";
             for (Column i : table.getColumns()){
                 if(!i.isGenerated()){
                     result+=i.getName();
@@ -100,14 +99,16 @@ public class SQLiteDriver implements DatabaseDriver {
         };
         return query.executeBatch(table, values, new PreparedStatementsSetStrategy(){
             @Override
-            public void addToBatch(PreparedStatement preparedStatement, Map<String, String>[] values) throws SQLException {
-                for (int j = 0; j<values.length; j++){
+            public void addToBatch(PreparedStatement preparedStatement, Collection<Map<String,String>> values) throws SQLException {
+                for (Map<String,String> value : values){
                     int columnIndex = 0;
                     for (Column i : table.getColumns()){
                         if (!i.isGenerated()){
                             columnIndex++;
-                            if (i.getType().contains("int")) preparedStatement.setInt(columnIndex, Integer.valueOf(values[j].get(i.getName())));
-                            else if (i.getType().contains("char")) preparedStatement.setString(columnIndex, values[j].get(i.getName()));
+                            if (i.getType().contains("int")) preparedStatement.setInt(columnIndex, Integer.valueOf(value.get(i.getName())));
+                            else if (i.getType().contains("char")) preparedStatement.setString(columnIndex, value.get(i.getName()));
+
+
                         }
                     }
                     preparedStatement.addBatch();
@@ -129,4 +130,13 @@ public class SQLiteDriver implements DatabaseDriver {
 
     }
 
+    @Override
+    public boolean insertIntoTableInDb(Collection<Map<String,String>> values) throws SQLException {
+        try {
+            return insertIntoTable(values);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
