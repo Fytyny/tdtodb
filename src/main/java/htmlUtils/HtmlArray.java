@@ -51,8 +51,8 @@ public class HtmlArray {
                 }
                 valuesSum += value;
             }
-            if (valuesSum.matches("[0-9]+\\.")){
-                columnTypes[i] = "double";
+            if (valuesSum.matches("[0-9\\.]+")){
+                columnTypes[i] = "real";
             }else if(valuesSum.matches("[0-9]+")){
                 columnTypes[i] = "int";
             }else{
