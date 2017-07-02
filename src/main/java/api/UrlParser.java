@@ -5,11 +5,8 @@ import org.jsoup.nodes.Document;
 
 import java.net.URL;
 
-/**
- * Created by Cziczarito on 11.06.2017.
- */
 public interface UrlParser {
-    public void setDoc(Document doc);
+    public void setDocument(Document document);
     public default void changeDoc(String html, boolean isURL){
         Document doc = null;
         try{
@@ -21,6 +18,6 @@ public interface UrlParser {
         }catch(Exception e){
             e.printStackTrace();
         }
-        setDoc(doc);
+        setDocument(doc);
     }
 }
